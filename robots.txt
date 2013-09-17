@@ -1,0 +1,6 @@
+#
+# robots.txt for CXNET
+#
+
+User-agent: *
+Disallow: /system/
