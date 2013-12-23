@@ -47,3 +47,6 @@ model:
 系统配置:
 	siteinfo.php中 网站相关信息
 	在system中core Controller.php中,加载默认配置<!--{$SITE.**}-->
+	
+2013-12-23 13:46:14
+	更名SimplePHP
