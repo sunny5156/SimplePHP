@@ -47,6 +47,14 @@ model:
 系统配置:
 	siteinfo.php中 网站相关信息
 	在system中core Controller.php中,加载默认配置<!--{$SITE.**}-->
+
+2013-12-20 21:37:42
+	在 display方法 去除$SITE 改成$system
+	$system['JS_PATH'] //模板中的js路径
+	$system['CSS_PATH'] //模板中的css路径
+	$system['IMAGES_PATH'] //模板中的images路径
 	
 2013-12-23 13:46:14
 	更名SimplePHP
+	
+
