@@ -1,7 +1,7 @@
 <?php
 /**
  * 核心控制器
- * @copyright   Copyright(c) 2011
+ * @copyright   Copyright(c) 2013
  * @author      sunny5156 <blog.cxiangnet.cn>
  * @version     1.0
  */
@@ -38,16 +38,25 @@ class Controller{
         }
         
 		final protected function display($tpl) {
+			//默认配置
+			$siteInfoFile = ROOT_PATH.'/config/siteinfo.php';
+			$theme = 'default';
+			if(file_exists($siteInfoFile)){
+				$system = include $siteInfoFile;
+				$theme = $system['theme'];
+				$system['JS_PATH'] = "view/{$system['theme']}/public/js/";
+				$system['CSS_PATH'] = "view/{$system['theme']}/public/css/";
+				$system['IMAGES_PATH'] = "view/{$system['theme']}/public/images/";
+				$this->assign('system', $system);
+			}
+// 			debug($system);
 // 			if(empty($tpl)){
 // 				$tpl = $this->_url_array['mod'].'/'.$this->_url_array['controller'].'/'.$this->_url_array['action'];
 // 			}
-			$tpl = $this->_url_array['mod'].'/'.$this->_url_array['controller'].'/'.$tpl;
-			
-			//默认配置
-			$siteInfoFile = ROOT_PATH.'/config/siteinfo.php';
-			if(file_exists($siteInfoFile)){
-				$SITE = include $siteInfoFile;
-				$this->assign('SITE', $SITE);
+			if($this->_url_array['mod'] == 'admin'){
+				$tpl = $this->_url_array['mod'].'/'.$this->_url_array['controller'].'/'.$tpl;
+			}else{
+				$tpl = VIEW_PATH.'/'.$theme.'/'.$this->_url_array['controller'].'/'.$tpl;
 			}
 			$this->_view->display($tpl);
 		}

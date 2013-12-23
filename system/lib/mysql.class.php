@@ -73,10 +73,15 @@ class mysql{
 	
 	// 获取一条记录（MYSQL_ASSOC，MYSQL_NUM，MYSQL_BOTH）
 	public function get_one($sql, $result_type = MYSQL_ASSOC) {
-		$query = $this->query ( $sql );
-		$rt = & mysql_fetch_array ( $query, $result_type );
-		$this->write_log ( "获取一条记录 " . $sql );
-		return $rt;
+		try{
+			$query = $this->query ( $sql );
+			$rt = & mysql_fetch_array ( $query, $result_type );
+			$this->write_log ( "获取一条记录 " . $sql );
+			return $rt;
+		}catch(Exception $e){
+			debug($e);
+			return null;
+		}
 	}
 	
 	// 获取全部记录
@@ -101,7 +106,7 @@ class mysql{
 			return false;
 		}
 		while ( list ( $key, $val ) = each ( $dataArray ) ) {
-			$field .= "$key,";
+			$field .= "`$key`,";//添加``
 			$value .= "'$val',";
 		}
 		$field = substr ( $field, 0, - 1 );
@@ -120,9 +125,10 @@ class mysql{
 			return false;
 		}
 		$value = "";
-		while ( list ( $key, $val ) = each ( $dataArray ) )
-			$value .= "$key = '$val',";
-		$value .= substr ( $value, 0, - 1 );
+		while ( list ( $key, $val ) = each ( $dataArray ) ){
+			$value .= "`$key` = '$val',";//添加``
+		}
+		$value = substr ( $value, 0, - 1 );//修改bug 错误使用 .=
 		$sql = "update $table set $value where 1=1 and $condition";
 		$this->write_log ( "更新 " . $sql );
 		if (! $this->query ( $sql ))
