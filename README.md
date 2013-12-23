@@ -1,4 +1,4 @@
-CXPHP
+SimplePHP
 =====
 自己动手写PHP MVC框架
 
