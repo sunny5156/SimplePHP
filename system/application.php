@@ -1,10 +1,13 @@
 <?php
 /**
  * 应用驱动类
- * @copyright   Copyright(c) 2011
+ * @copyright   Copyright(c) 2013
  * @author      sunny5156 <blog.cxiangnet.cn>
  * @version     1.0
  */
+
+
+
 define ( 'SYSTEM_PATH', dirname ( __FILE__ ) );
 define ( 'ROOT_PATH', substr ( SYSTEM_PATH, 0, - 7 ) );
 define ( 'SYS_LIB_PATH', SYSTEM_PATH . '/lib' );
@@ -12,11 +15,12 @@ define ( 'APP_LIB_PATH', ROOT_PATH . '/lib' );
 define ( 'SYS_CORE_PATH', SYSTEM_PATH . '/core' );
 define ( 'CONTROLLER_PATH', ROOT_PATH . '/controller' );
 define ( 'MODEL_PATH', ROOT_PATH . '/model' );
-define ( 'VIEW_PATH', ROOT_PATH . '/view' );
 define ( 'LOG_PATH', ROOT_PATH . '/error/' );
+define ( 'VIEW_PATH', ROOT_PATH . '/view');
 define ( 'CACHE_PATH', ROOT_PATH . '/cache' );
 
 include_once ROOT_PATH . '/system/include/common.include.php';
+
 
 final class Application {
 	public static $_lib = null;
