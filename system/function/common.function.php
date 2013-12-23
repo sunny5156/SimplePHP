@@ -227,13 +227,7 @@ function getClientIp($type = 0) {
  */
 function session($name,$value='') {
     $prefix   =  '';
-    if(is_array($name)) { // session初始化 在session_start 之前调用
-//         if(isset($name['prefix'])) C('SESSION_PREFIX',$name['prefix']);
-//         if(C('VAR_SESSION_ID') && isset($_REQUEST[C('VAR_SESSION_ID')])){
-//             session_id($_REQUEST[C('VAR_SESSION_ID')]);
-//         }elseif(isset($name['id'])) {
-//             session_id($name['id']);
-//         }
+    if(is_array($name)) { 
         ini_set('session.auto_start', 0);
         if(isset($name['name']))            session_name($name['name']);
         if(isset($name['path']))            session_save_path($name['path']);
@@ -243,20 +237,6 @@ function session($name,$value='') {
         if(isset($name['use_cookies']))     ini_set('session.use_cookies', $name['use_cookies']?1:0);
         if(isset($name['cache_limiter']))   session_cache_limiter($name['cache_limiter']);
         if(isset($name['cache_expire']))    session_cache_expire($name['cache_expire']);
-//         if(isset($name['type']))            C('SESSION_TYPE',$name['type']);
-//         if(C('SESSION_TYPE')) { // 读取session驱动
-//             $class      = 'Session'. ucwords(strtolower(C('SESSION_TYPE')));
-//             // 检查驱动类
-//             if(require_cache(EXTEND_PATH.'Driver/Session/'.$class.'.class.php')) {
-//                 $hander = new $class();
-//                 $hander->execute();
-//             }else {
-//                 // 类没有定义
-//                 throw_exception(L('_CLASS_NOT_EXIST_').': ' . $class);
-//             }
-//         }
-//         // 启动session
-//         if(C('SESSION_AUTO_START'))  session_start();
     }elseif('' === $value){ 
         if(0===strpos($name,'[')) { // session 操作
             if('[pause]'==$name){ // 暂停session
@@ -390,4 +370,97 @@ function showPage($count,$pageNum,$baseUrl) {
 	$page .= '</div>';
 
 	return $page;
+}
+
+//获取文件目录列表,该方法返回数组
+function getDir($dir) {
+	$dirArray[]=NULL;
+	if (false != ($handle = opendir ( $dir ))) {
+		$i=0;
+		while ( false !== ($file = readdir ( $handle )) ) {
+			//去掉"“.”、“..”以及带“.xxx”后缀的文件
+			if ($file != "." && $file != ".."&&!strpos($file,".")) {
+				$dirArray[$i]=$file;
+				$i++;
+			}
+		}
+		//关闭句柄
+		closedir ( $handle );
+	}
+	return $dirArray;
+}
+
+//获取文件列表
+function getFile($dir) {
+	$fileArray[]=NULL;
+	if (false != ($handle = opendir ( $dir ))) {
+		$i=0;
+		while ( false !== ($file = readdir ( $handle )) ) {
+			//去掉"“.”、“..”以及带“.xxx”后缀的文件
+			if ($file != "." && $file != ".."&&strpos($file,".")) {
+				$fileArray[$i]="./imageroot/current/".$file;
+				if($i==100){
+					break;
+				}
+				$i++;
+			}
+		}
+		//关闭句柄
+		closedir ( $handle );
+	}
+	return $fileArray;
+}
+
+
+function jsonOUT($content = '', $callback = ''){
+	
+	$content = empty($content)?ob_get_contents():$content;
+	@header("Expires: -1");
+	@header("Cache-Control: no-store, private, post-check=0, pre-check=0, max-age=0", FALSE);
+	@header("Pragma: no-cache");
+	@header("Content-type: application/json; charset=utf-8");
+	if (!is_array($content))
+	{
+		$content=array('html'=>$content);
+	}
+	echo empty($callback)?json_encode($content):$callback.'('.json_encode($content).');';
+	exit();
+}
+/**
+ * 写文件
+ * @param string $file
+ * @param string $str
+ * @param string $mode
+ * @return boolean
+ */
+function wfile($file, $str, $mode = 'w') {
+	$oldmask = @umask ( 002 );
+	//@chmod ( $file, 777 );
+	//@exec("chmod 777 $file");
+	$fp = @fopen ( $file, $mode );
+	@flock ( $fp, 3 );
+	if (! $fp) {
+		return false;
+	} else {
+		@fwrite ( $fp, $str );
+		@fclose ( $fp );
+		@umask ( $oldmask );
+		return true;
+	}
+}
+
+function deldir($dir) {
+	//先删除目录下的文件：
+	$dh=opendir($dir);
+	while ($file=readdir($dh)) {
+		if($file!="." && $file!="..") {
+			$fullpath=$dir."/".$file;
+			if(!is_dir($fullpath)) {
+				@unlink($fullpath);
+			} else {
+				deldir($fullpath);
+			}
+		}
+	}
+	closedir($dh);
 }
