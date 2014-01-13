@@ -9,9 +9,31 @@ class Controller{
 	
         var $_view = '';
         var $_url_array = '';
+        var $_theme = '';
         public function __construct() {
-               // header('Content-type:text/html;chartset=utf-8');
-               $this->_view = load('view');
+          // header('Content-type:text/html;chartset=utf-8');
+          #$this->_view = load('view');
+          $this->_view = new View();
+          //默认配置
+          $siteInfoFile = ROOT_PATH.'/config/siteinfo.php';
+          $navInfoFile = ROOT_PATH.'/config/nav.php';
+          global $system ;
+          $this->_theme = 'default';
+          if(file_exists($siteInfoFile)){
+            $system = include $siteInfoFile;
+            $this->_theme = $system['theme'];
+          }
+          if(file_exists($navInfoFile)){
+          	$nav = include $navInfoFile;
+          	$system['NAV'] = $nav;
+          }
+          //静态文件路径
+          $system['THEME_PATH'] = "view/{$system['theme']}/";
+          $system['JS_PATH'] = "view/{$system['theme']}/public/js/";
+          $system['CSS_PATH'] = "view/{$system['theme']}/public/css/";
+          $system['IMAGES_PATH'] = "view/{$system['theme']}/public/images/";
+          
+          $this->assign('system', $system);
         }
 
         /**
@@ -19,44 +41,30 @@ class Controller{
          * @param array $arr
          */
         final function setUrlArray($arr){
+        	global $system ;
         	$this->_url_array = $arr;
+        	//当前mod
+        	$system['mod'] = $this->_url_array['mod'];
         }
-        /**
-         * 加载模板文件
-         * @access      final   protect
-         * @param       string  $path   模板路径
-         * @return      string  模板字符串
-         */
-        final protected function showTemplate($path,$data = array()){
-                $template =  load('template');
-                $template->init($path,$data);
-                $template->outPut();
-        }
-        
+		/**
+		 * 模板赋值
+		 * @param string $name 模板变量名
+		 * @param mix $val 变量值
+		 */       
         final protected function assign($name,$val) {
         	$this->_view->assign($name,$val);
         }
-        
+        /**
+         * 模板替换
+         * @param string $tpl 模板文件
+         */
 		final protected function display($tpl) {
-			//默认配置
-			$siteInfoFile = ROOT_PATH.'/config/siteinfo.php';
-			$theme = 'default';
-			if(file_exists($siteInfoFile)){
-				$system = include $siteInfoFile;
-				$theme = $system['theme'];
-				$system['JS_PATH'] = "view/{$system['theme']}/public/js/";
-				$system['CSS_PATH'] = "view/{$system['theme']}/public/css/";
-				$system['IMAGES_PATH'] = "view/{$system['theme']}/public/images/";
-				$this->assign('system', $system);
-			}
-// 			debug($system);
-// 			if(empty($tpl)){
-// 				$tpl = $this->_url_array['mod'].'/'.$this->_url_array['controller'].'/'.$this->_url_array['action'];
-// 			}
-			if($this->_url_array['mod'] == 'admin'){
-				$tpl = $this->_url_array['mod'].'/'.$this->_url_array['controller'].'/'.$tpl;
+			global $system;
+			if($system['URI']['mod'] == 'admin'){
+				$tpl = $system['URI']['mod'].'/'.$system['URI']['controller'].'/'.$tpl;
 			}else{
-				$tpl = VIEW_PATH.'/'.$theme.'/'.$this->_url_array['controller'].'/'.$tpl;
+				$this->_view->setTheme($this->_theme);//设置当前theme的模板路径
+				$tpl = VIEW_PATH.'/'.$this->_theme.'/'.$system['URI']['controller'].'/'.$tpl;
 			}
 			$this->_view->display($tpl);
 		}

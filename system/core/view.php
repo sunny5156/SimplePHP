@@ -1,50 +1,38 @@
 <?php
-
 /**
  +--------------------------------------------------
  * View的Smarty(为兼容smarty而编写的视图类)
  * 具体使用方法请查询smarty的使用方法
  +--------------------------------------------------
- * @category Toper
  * @package Core
  * @subpackage View
- * @author mingtingling
- * @version 0.5
+ * @author sunny5156 <blog.cxiangnet.cn>
+ * @version 1.0
  +--------------------------------------------------
  */
- 
 
-
-
-class view{
+class View{
 	
 	private $_smarty = null;
 // 	private $_config = null;
 	
 	public function __construct() {
+		global $system;
 		$this->_smarty = new Smarty();
-// 		debug($this->_smarty,0);
-// 		$this->_smarty->caching = $config['caching'];
-// 		$this->_smarty->template_dir = $config['template_dir'];
-// 		$this->_smarty->compile_dir = $config['compile_dir'];
-// 		$this->_smarty->cache_dir = $config['cache_dir'];
-// 		$this->_smarty->left_delimiter = $config['left_delimiter'];
-// 		$this->_smarty->right_delimiter = $config['right_delimiter'];
-// 		$this->_smarty->debugging = $config['debug'];
-// 		$this->_smarty->cache_lifetime = $config['cache_time'];
-	}
-	
-	public function setConfig($config){
-		$this->_smarty->caching = $config['caching'];
-		$this->_smarty->template_dir = $config['template_dir'];
-		$this->_smarty->compile_dir = $config['compile_dir'];
-		$this->_smarty->cache_dir = $config['cache_dir'];
-		$this->_smarty->left_delimiter = $config['left_delimiter'];
-		$this->_smarty->right_delimiter = $config['right_delimiter'];
-		$this->_smarty->debugging = $config['debug'];
-		$this->_smarty->cache_lifetime = $config['cache_time'];
+		$this->_smarty->caching = $system['smarty']['caching'];
+		$this->_smarty->template_dir = $system['smarty']['template_dir'];
+		$this->_smarty->compile_dir = $system['smarty']['compile_dir'];
+		$this->_smarty->cache_dir = $system['smarty']['cache_dir'];
+		$this->_smarty->left_delimiter = $system['smarty']['left_delimiter'];
+		$this->_smarty->right_delimiter = $system['smarty']['right_delimiter'];
+		$this->_smarty->debugging = $system['smarty']['debug'];
+		$this->_smarty->cache_lifetime = $system['smarty']['cache_time'];
 		$this->_smarty->allow_php_tag=true;
 		$this->_smarty->php_handling = SMARTY_PHP_ALLOW ;
+	}
+	//设置模板
+	public function setTheme($theme){
+		$this->_smarty->template_dir = $this->_smarty->template_dir ."/{$theme}/";
 	}
 	
 	/**

@@ -8,14 +8,13 @@ class captcha {
 	                                      
 	// 尝试开始session
 	function __construct() {
+		global $system;
 		@session_start ();
-	}
-	/* 参数：（宽度，高度，字符个数） */
-	function setConfig($config) {
-		$this->width = $config ['width'];
-		$this->height = $config ['height'];
-		$this->codenum = $config ['codenum'];
-		$this->session_flag = $config ['session_flag'];
+		/* 参数：（宽度，高度，字符个数） */
+		$this->width = $system['captcha']['width'];
+		$this->height = $system['captcha']['height'];
+		$this->codenum = $system['captcha']['codenum'];
+		$this->session_flag = $system['captcha']['session_flag'];
 	}
 	function create() {
 		ob_clean();
