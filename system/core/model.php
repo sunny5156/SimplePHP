@@ -15,7 +15,7 @@ class Model {
         private $groupby = '';
         private $limit = '';
         
-        final public function __construct($table) {
+        public function __construct($table) {
                 header('Content-type:text/html;chartset=utf-8');
                 $config_db = config('db');
                 $this->table = $config_db['db_table_prefix'].$table;
@@ -74,11 +74,12 @@ class Model {
          * 生成分页
          * @param int $page
          * @param string $baseUrl
+         * @param array $pageParam
          * @return string
          */
-        public function getPager($page,$baseUrl){
+        public function getPager($page,$baseUrl,$pageParam = array()){
         	$count = $this->db->get_count($this->table);
-        	return showPage($count, $page, $baseUrl);
+        	return showPage($count, $page, $baseUrl,$pageParam);
         }
         /**
          * 设置获取的字段
