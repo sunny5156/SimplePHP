@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 调试函数
  * @param array $arr
@@ -43,7 +42,7 @@ function D($model) {
 		trigger_error('不能实例化空模型');
 	}
 	$model_name = $model . 'Model';
-	include ROOT_PATH .'/model/'.$model_name.'.php';
+	include_once ROOT_PATH .'/model/'.$model_name.'.php';
 	$model = new $model_name;
 	if($model instanceof Model){
 		return $model;
@@ -91,107 +90,60 @@ function U($str = "default/index/index",$params=array()){
 	$arr['type'] = $conf['url_type'];
 	if(!empty($str)){
 		$urlArr = explode('/', $str);
-	}
-	$arr['m'] = $urlArr[0];
-	$arr['c'] = $urlArr[1];
-	$arr['a'] = $urlArr[2];
-	
-	$arr['params']= $params;
-	unset($urlArr);
-	unset($params);
-
-	switch ($arr['type']){
 		
-		case 1:
-			$url .="./index.php?";
-			if(isset($arr['a']) && !empty($arr['a'])){
-				$url .="a={$arr['a']}";
-			}
-			if(isset($arr['c']) && !empty($arr['c'])){
-				$url .="&c={$arr['c']}";
-			}
-			if(isset($arr['m']) && !empty($arr['m'])){
-				$url .="&m={$arr['m']}";
-			}
-// 			$url .="./index.php?a={$arr['a']}&c={$arr['c']}&m={$arr['m']}";
-			if(!empty($arr['params']) && is_array($arr['params'])){
-				foreach ($arr['params'] as $k=>$v){
-					$url .="&{$k}={$v}";
+		$arr['m'] = $urlArr[0];
+		$arr['c'] = $urlArr[1];
+		$arr['a'] = $urlArr[2];
+		if(!empty($params)){
+			$arr['params']= $params;
+		}
+		unset($urlArr);
+		unset($params);
+		
+		switch ($arr['type']){
+		
+			case 1:
+				$url .="./index.php?";
+				if(isset($arr['m']) && !empty($arr['m'])){
+					$url .="m={$arr['m']}";
 				}
-			}
-			break;
-		case 2:
-			$url .="./index.php?";
-			if(isset($arr['a']) && !empty($arr['a'])){
-				$url .="a_{$arr['a']}";
-			}
-			if(isset($arr['c']) && !empty($arr['c'])){
-				$url .="-c_{$arr['c']}";
-			}
-			if(isset($arr['m']) && !empty($arr['m'])){
-				$url .="-m_{$arr['m']}";
-			}
-			if(!empty($arr['params']) && is_array($arr['params'])){
-				foreach ($arr['params'] as $k=>$v){
-					$url .="-{$k}_{$v}";
+				if(isset($arr['c']) && !empty($arr['c'])){
+					$url .="&c={$arr['c']}";
 				}
-			}
-			$url .= '.html';
-			break;
+				if(isset($arr['a']) && !empty($arr['a'])){
+					$url .="&a={$arr['a']}";
+				}
+// 				$url .="./index.php?a={$arr['a']}&c={$arr['c']}&m={$arr['m']}";
+				if(!empty($arr['params']) && is_array($arr['params'])){
+					foreach ($arr['params'] as $k=>$v){
+						$url .="&{$k}={$v}";
+					}
+				}
+				break;
+			case 2:
+				$url .="/";
+				if(isset($arr['m']) && !empty($arr['m'])){
+					$url .="{$arr['m']}";
+				}
+				if(isset($arr['c']) && !empty($arr['c'])){
+					$url .=".{$arr['c']}";
+				}
+				if(isset($arr['a']) && !empty($arr['a'])){
+					$url .=".{$arr['a']}";
+				}
+					
+				if(!empty($arr['params']) && is_array($arr['params'])){
+					foreach ($arr['params'] as $k=>$v){
+						$url .="-{$k}-{$v}";
+					}
+				}
+				$url .= '.html';
+				break;
+		}
+	}else{
+		$url = './index.php';
 	}
 	
-	return $url;
-}
-
-function mkUrl( $arr = array('type'=>1,'a'=>'index','c'=>'index','m'=>'default','params'=>'')){
-	//
-	$url = '';
-	$conf = config('route');
-	if(!isset($arr['type'])){
-		$arr['type'] = $conf['url_type'];
-	}
-
-	// 	debug( $CONFIG);
-	switch ($arr['type']){
-
-		case 1:
-			$url .="./index.php?";
-			if(isset($arr['a']) && !empty($arr['a'])){
-				$url .="a={$arr['a']}";
-			}
-			if(isset($arr['c']) && !empty($arr['c'])){
-				$url .="&c={$arr['c']}";
-			}
-			if(isset($arr['m']) && !empty($arr['m'])){
-				$url .="&m={$arr['m']}";
-			}
-			// 			$url .="./index.php?a={$arr['a']}&c={$arr['c']}&m={$arr['m']}";
-			if(!empty($arr['params']) && is_array($arr['params'])){
-				foreach ($arr['params'] as $k=>$v){
-					$url .="&{$k}={$v}";
-				}
-			}
-			break;
-		case 2:
-			$url .="./index.php?";
-			if(isset($arr['a']) && !empty($arr['a'])){
-				$url .="a_{$arr['a']}";
-			}
-			if(isset($arr['c']) && !empty($arr['c'])){
-				$url .="-c_{$arr['c']}";
-			}
-			if(isset($arr['m']) && !empty($arr['m'])){
-				$url .="-m_{$arr['m']}";
-			}
-			if(!empty($arr['params']) && is_array($arr['params'])){
-				foreach ($arr['params'] as $k=>$v){
-					$url .="-{$k}_{$v}";
-				}
-			}
-			$url .= '.html';
-			break;
-	}
-
 	return $url;
 }
 
@@ -351,28 +303,55 @@ function isGet(){
 }
 
 /**
- * 
+ * 分页函数
  * @param int $count 总数
  * @param int $page 页数
  * @param string $baseUrl 基础URL
+ * @param array $pageParam 分页参数
  * @return string
  */
-function showPage($count,$pageNum,$baseUrl) {
+function showPage($count,$pageNum,$baseUrl,$pageParam = array()) {
 	$pagelimit = 10;
-
-	$page = '<div class="pagination-i">';
-// 	$page .= '<div>'.(($page-1)*$pagelimit +1).'-'.($page*$pagelimit ).'条记录 / 共';
-// 	$page .= $count.'条记录</div>';
-	if ($pageNum > 1)
-		$page .= '<a href='.$baseUrl.'&page='.($pageNum-1).'><span>上一页</span></a>';
-	if ($pageNum < ceil($count/$pagelimit) )
-		$page .= '<a href='.$baseUrl.'&page='.($pageNum+1).'><span>下一页</span></a>';
-	$page .= '</div>';
+	global $system ;
+	if($system['URI']['mod'] == 'admin'){
+		$page = '<div class="pagination-i">';
+		// 	$page .= '<div>'.(($page-1)*$pagelimit +1).'-'.($page*$pagelimit ).'条记录 / 共';
+		// 	$page .= $count.'条记录</div>';
+		if ($pageNum > 1)
+			$page .= '<a href='.U($baseUrl,array_merge($pageParam,array('page'=>$pageNum-1))).'><span>上一页</span></a>';
+		if ($pageNum < ceil($count/$pagelimit) )
+			$page .= '<a href='.U($baseUrl,array_merge($pageParam,array('page'=>$pageNum+1))).'><span>下一页</span></a>';
+		$page .= '</div>';
+	}else{
+		$file = $system['THEME_PATH'].'public/pager.html';
+		$pageContent = '';
+		$pageContent = file_get_contents($file);
+		if ($pageNum > 1){
+			$prevUrl = U($baseUrl,array_merge($pageParam,array('page'=>$pageNum-1)));
+		}else{
+			$prevUrl = '';
+		}
+		if ($pageNum < ceil($count/$pagelimit) ){
+			$nextUrl = U($baseUrl,array_merge($pageParam,array('page'=>$pageNum+1)));
+		}else{
+			$nextUrl = '';
+		}
+		
+		$pageContent = preg_replace('/\{prev\}/', $prevUrl, $pageContent);
+		$pageContent = preg_replace('/\{next\}/', $nextUrl, $pageContent);
+		$pageContent = preg_replace('/\{pageNum\}/', $pageNum, $pageContent);
+		
+		$page = $pageContent;
+	}
 
 	return $page;
 }
 
-//获取文件目录列表,该方法返回数组
+/**
+ * 获取文件目录列表,该方法返回数组
+ * @param string $dir
+ * @return Ambigous <NULL, string>
+ */
 function getDir($dir) {
 	$dirArray[]=NULL;
 	if (false != ($handle = opendir ( $dir ))) {
@@ -390,7 +369,9 @@ function getDir($dir) {
 	return $dirArray;
 }
 
-//获取文件列表
+/**
+ * 获取文件列表
+ */
 function getFile($dir) {
 	$fileArray[]=NULL;
 	if (false != ($handle = opendir ( $dir ))) {
@@ -411,7 +392,11 @@ function getFile($dir) {
 	return $fileArray;
 }
 
-
+/**
+ * json输出
+ * @param mix $content
+ * @param string $callback
+ */
 function jsonOUT($content = '', $callback = ''){
 	
 	$content = empty($content)?ob_get_contents():$content;
@@ -448,7 +433,10 @@ function wfile($file, $str, $mode = 'w') {
 		return true;
 	}
 }
-
+/**
+ * 清空文件夹
+ * @param string $dir 文件夹路径
+ */
 function deldir($dir) {
 	//先删除目录下的文件：
 	$dh=opendir($dir);
@@ -463,4 +451,20 @@ function deldir($dir) {
 		}
 	}
 	closedir($dh);
+}
+/**
+ * html代码解码
+ * @param string $str
+ * @return string
+ */
+function html_decode($str){
+	return stripslashes(htmlspecialchars_decode($str));
+}
+/**
+ * html代码转码
+ * @param string $str
+ * @return string
+ */
+function html_encode($str){
+	return htmlspecialchars(addslashes($str));
 }
