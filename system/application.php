@@ -36,7 +36,6 @@ final class Application {
 		//加载默认配置
 		$system['route'] = self::$_config ['route'];//路由默认配置
 		$system['smarty'] = self::$_config ['smarty'];//smarty默认配置
-		$system['smarty'] = self::$_config ['smarty'];//smarty默认配置
 		$system['captcha'] = self::$_config ['captcha'];//验证码默认配置
 	}
 	/**
